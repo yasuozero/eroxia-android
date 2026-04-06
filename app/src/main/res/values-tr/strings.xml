@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="join_viewer">İzleyici Olarak Katıl</string>
+    <string name="join_admin">Admin Olarak Katıl</string>
+
+    <string name="disconnected_title">Bağlantı Kesildi</string>
+    <string name="disconnected_description">Sunucu ile iletişim kurulamıyor. Lütfen ağ bağlantınızı kontrol edip tekrar deneyin.</string>
+
+    <string name="admin_taken_title">Yönetici Aktif</string>
+    <string name="admin_taken_description">Sistem şu an başka bir yönetici tarafından kontrol ediliyor. İzleyici olarak katılabilirsiniz.</string>
+
+    <string name="admin_available_title">Oturum Hazır</string>
+    <string name="admin_available_description">Yönetici olarak kontrolü devralabilir veya izleyici moduna katılabilirsiniz.</string>
+
+    <string name="process_temperature">Sıcaklık</string>
+    <string name="process_pressure">Basınç</string>
+    <string name="process_speed">Hız</string>
+
+    <string name="control_mods_button">Modlar</string>
+</resources>

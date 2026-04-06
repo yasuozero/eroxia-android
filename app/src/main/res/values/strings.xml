@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name" translatable="false">Eroxia</string>
+
+    <string name="join_viewer">Join as Viewer</string>
+    <string name="join_admin">Join as Admin</string>
+
+    <string name="disconnected_title">Disconnected</string>
+    <string name="disconnected_description">Cannot communicate with the server. Please check your network connection and try again.</string>
+
+    <string name="admin_taken_title">Administrator Active</string>
+    <string name="admin_taken_description">The system is currently controlled by another administrator. You can join as a viewer.</string>
+
+    <string name="admin_available_title">Session Ready</string>
+    <string name="admin_available_description">You can take control as an administrator or join in viewer mode.</string>
+
+    <string name="process_temperature">Temperature</string>
+    <string name="process_pressure">Pressure</string>
+    <string name="process_speed">Speed</string>
+
+    <string name="control_mods_button">Mods</string>
+</resources>
