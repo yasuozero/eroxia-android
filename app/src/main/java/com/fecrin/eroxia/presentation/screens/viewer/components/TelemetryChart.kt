@@ -84,5 +84,5 @@ private fun buildLine(color: Color) = LineCartesianLayer.rememberLine(
     fill = LineCartesianLayer.LineFill.single(Fill(color)),
     areaFill = LineCartesianLayer.AreaFill.single(Fill(color.copy(alpha = 0.15f))),
     stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 2.dp),
-    interpolator = LineCartesianLayer.Interpolator.cubic(curvature = 0.5f)
+    interpolator = LineCartesianLayer.Interpolator.cubic(curvature = 0.1f)
 )

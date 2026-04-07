@@ -42,11 +42,9 @@ class ViewerViewModel @Inject constructor(
 
         modelProducer.runTransaction {
             lineSeries {
-                val xValues = snap.map { it.t }
-
-                series(x = xValues, y = snap.map { it.process.pressure })
-                series(x = xValues, y = snap.map { it.process.temperature })
-                series(x = xValues, y = snap.map { it.process.flow })
+                series(snap.map { it.process.pressure })
+                series(snap.map { it.process.temperature })
+                series(snap.map { it.process.flow })
             }
         }
     }
