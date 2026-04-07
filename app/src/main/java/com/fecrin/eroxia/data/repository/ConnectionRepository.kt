@@ -1,6 +1,5 @@
 package com.fecrin.eroxia.data.repository
 
-import android.util.Log
 import com.fecrin.eroxia.data.json
 import com.fecrin.eroxia.data.local.dao.TelemetryDao
 import com.fecrin.eroxia.data.local.entity.TelemetryEntity
@@ -33,7 +32,6 @@ class ConnectionRepository @Inject constructor(
         scope.launch {
             router.handshake.collect { payload ->
                 currentSessionId = payload.sessionId
-                Log.d("EroxiaDB", "Yeni oturum başladı: $currentSessionId")
             }
         }
 
@@ -47,8 +45,7 @@ class ConnectionRepository @Inject constructor(
                         process = payload.process
                     )
                     telemetryDao.insertTelemetry(entity)
-                    Log.d("EroxiaDB", "Veri Kaydedildi! Zaman: ${entity.t}")
-                } ?: Log.e("EroxiaDB", "Veri geldi ama Session ID yok! Kaydedilmedi.")
+                }
             }
         }
     }

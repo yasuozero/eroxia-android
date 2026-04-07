@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,22 +38,14 @@ import com.fecrin.eroxia.presentation.screens.control.components.ControlPadGrid
 import com.fecrin.eroxia.presentation.screens.control.components.ModsButton
 import com.fecrin.eroxia.presentation.screens.control.components.ProcessCard
 import com.fecrin.eroxia.presentation.screens.control.models.ControlButtonData
-import com.fecrin.eroxia.presentation.screens.control.models.ControlUiState
 
 @Composable
 fun ControlScreen(
     viewModel: ControlViewModel = hiltViewModel()
 ) {
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    ControlScreenContent(
-        uiState = uiState, onPowerClick = { viewModel.togglePower() })
-}
-
-@Composable
-private fun ControlScreenContent(
-    uiState: ControlUiState, onPowerClick: () -> Unit
-) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -84,7 +75,8 @@ private fun ControlScreenContent(
                     ModsButton {}
 
                     ControlPad(
-                        onPowerClick = onPowerClick
+                        onPowerClick = { viewModel.togglePower() },
+                        onCommand = { viewModel.sendCommand(it) }
                     )
                 }
             } else {
@@ -93,7 +85,7 @@ private fun ControlScreenContent(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
                     FloatingActionButton(
-                        onClick = onPowerClick,
+                        onClick = { viewModel.togglePower() },
                         modifier = Modifier.size(120.dp),
                         shape = CircleShape,
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -139,59 +131,45 @@ private fun ControlProcessArea(temperature: Int, pressure: Int, speed: Int) {
         )
     }
 }
-
 @Composable
 private fun ControlPad(
-    onPowerClick: () -> Unit, viewModel: ControlViewModel = hiltViewModel()
+    onPowerClick: () -> Unit,
+    onCommand: (String) -> Unit
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
 
     val buttonList = listOf(
-        ControlButtonData(
-            Icons.AutoMirrored.Default.RotateLeft,
-            "Rotate Left",
-            secondaryColor
-        ) {
-            viewModel.sendCommand("ROTATE_LEFT")
+        ControlButtonData(Icons.AutoMirrored.Default.RotateLeft, "Rotate Left", secondaryColor) {
+            onCommand("ROTATE_LEFT")
         },
         ControlButtonData(Icons.Default.KeyboardArrowUp, "Up", primaryColor) {
-            viewModel.sendCommand("UP")
+            onCommand("UP")
         },
         ControlButtonData(Icons.AutoMirrored.Default.CallMade, "Top Right", secondaryColor) {
-            viewModel.sendCommand("TOP_RIGHT")
+            onCommand("TOP_RIGHT")
         },
-
         ControlButtonData(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Left", primaryColor) {
-            viewModel.sendCommand("LEFT")
+            onCommand("LEFT")
         },
         ControlButtonData(Icons.Default.Pause, "Power", Color(0xFFF44336)) {
             onPowerClick()
         },
         ControlButtonData(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Right", primaryColor) {
-            viewModel.sendCommand("RIGHT")
+            onCommand("RIGHT")
         },
-
         ControlButtonData(Icons.AutoMirrored.Default.CallReceived, "Bottom Left", secondaryColor) {
-            viewModel.sendCommand("BOTTOM_LEFT")
+            onCommand("BOTTOM_LEFT")
         },
         ControlButtonData(Icons.Default.KeyboardArrowDown, "Down", primaryColor) {
-            viewModel.sendCommand("DOWN")
+            onCommand("DOWN")
         },
         ControlButtonData(Icons.AutoMirrored.Filled.RotateRight, "Rotate Right", secondaryColor) {
-            viewModel.sendCommand("ROTATE_RIGHT")
-        })
+            onCommand("ROTATE_RIGHT")
+        }
+    )
 
     Box(modifier = Modifier.padding(24.dp)) {
         ControlPadGrid(buttons = buttonList)
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ControlScreenPreview() {
-    ControlScreenContent(
-        uiState = ControlUiState(
-            isRunning = true, temperature = 25, pressure = 1013, speed = 10
-        ), onPowerClick = {})
 }

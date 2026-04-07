@@ -3,6 +3,7 @@ package com.fecrin.eroxia.presentation.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fecrin.eroxia.R
+import com.fecrin.eroxia.data.remote.Constants
 import com.fecrin.eroxia.data.repository.ConnectionRepository
 import com.fecrin.eroxia.domain.AuthenticateAsAdminUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val repository: ConnectionRepository) :
+class HomeViewModel @Inject constructor(private val repository: ConnectionRepository,private val authenticateAsAdmin: AuthenticateAsAdminUseCase) :
     ViewModel() {
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Disconnected)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -35,7 +36,7 @@ class HomeViewModel @Inject constructor(private val repository: ConnectionReposi
     }
 
     private fun connect() {
-        repository.connect("ws://10.0.2.2:8080")
+        repository.connect(Constants.WS_URL)
     }
 
     private fun listenHandshake() {
@@ -87,7 +88,6 @@ class HomeViewModel @Inject constructor(private val repository: ConnectionReposi
     }
 
     fun loginAsAdmin(password: String) {
-        _adminError.value = null
-        AuthenticateAsAdminUseCase(repository).invoke(password)
+        authenticateAsAdmin(password)
     }
 }

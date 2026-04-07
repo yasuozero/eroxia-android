@@ -34,7 +34,7 @@ class ViewerViewModel @Inject constructor(
             repository.router.telemetry.collect { payload ->
                 totalTicks++
                 _points.update { (it + payload).takeLast(maxPts) }
-                launch { syncChart() }
+                syncChart()
             }
         }
     }
