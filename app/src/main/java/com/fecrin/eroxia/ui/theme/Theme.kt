@@ -15,14 +15,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-
 private val DarkColorScheme = darkColorScheme(
-    primary = Zinc50,
-    onPrimary = Zinc900,
-    primaryContainer = Zinc800,
-    onPrimaryContainer = Zinc50,
 
-    secondary = Zinc800,
+    primary = Primary500,
+    onPrimary = White,
+    primaryContainer = Primary900,
+    onPrimaryContainer = Primary100,
+
+
+    secondary = Zinc700,
     onSecondary = Zinc50,
     secondaryContainer = Zinc800,
     onSecondaryContainer = Zinc200,
@@ -36,27 +37,26 @@ private val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = Zinc300,
 
     error = Red500,
-    onError = Zinc50,
+    onError = White,
     errorContainer = Red900,
     onErrorContainer = Red50,
 
     outline = Zinc700,
     outlineVariant = Zinc800,
-
     scrim = Zinc950
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Zinc900,
-    onPrimary = Zinc50,
-    primaryContainer = Zinc100,
-    onPrimaryContainer = Zinc900,
 
-    secondary = Zinc100,
+    primary = Primary600,
+    onPrimary = White,
+    primaryContainer = Primary100,
+    onPrimaryContainer = Primary900,
+
+    secondary = Zinc200,
     onSecondary = Zinc900,
-    secondaryContainer = Zinc200,
+    secondaryContainer = Zinc100,
     onSecondaryContainer = Zinc900,
-
 
     background = Zinc50,
     onBackground = Zinc900,
@@ -67,13 +67,12 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = Zinc600,
 
     error = Red500,
-    onError = Zinc50,
+    onError = White,
     errorContainer = Red50,
     onErrorContainer = Red900,
 
     outline = Zinc300,
     outlineVariant = Zinc200,
-
     scrim = Zinc950
 )
 
@@ -97,8 +96,7 @@ fun EroxiaTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view)
-                .isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
