@@ -35,7 +35,7 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         viewModel.adminSuccess.collect {
             navController.navigate(Control) {
-                popUpTo(Home) { inclusive = true }
+                popUpTo(Home) { inclusive = false }
             }
         }
     }

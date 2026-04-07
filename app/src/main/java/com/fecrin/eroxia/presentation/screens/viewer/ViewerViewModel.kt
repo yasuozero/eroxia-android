@@ -23,6 +23,7 @@ class ViewerViewModel @Inject constructor(
     private val _points = MutableStateFlow<List<TelemetryPayload>>(emptyList())
     val points = _points.asStateFlow()
     val connectionState = repository.connectionState
+    private var totalTicks = 0L
 
     init {
         listenTelemetry()
@@ -31,6 +32,7 @@ class ViewerViewModel @Inject constructor(
     private fun listenTelemetry() {
         viewModelScope.launch {
             repository.router.telemetry.collect { payload ->
+                totalTicks++
                 _points.update { (it + payload).takeLast(maxPts) }
                 launch { syncChart() }
             }
@@ -40,11 +42,14 @@ class ViewerViewModel @Inject constructor(
     private suspend fun syncChart() {
         val snap = _points.value.ifEmpty { return }
 
+        val startX = if (totalTicks > snap.size) totalTicks - snap.size else 0L
+        val xValues = snap.indices.map { startX + it }
+
         modelProducer.runTransaction {
             lineSeries {
-                series(snap.map { it.process.pressure })
-                series(snap.map { it.process.temperature })
-                series(snap.map { it.process.flow })
+                series(x = xValues, y = snap.map { it.process.pressure })
+                series(x = xValues, y = snap.map { it.process.temperature })
+                series(x = xValues, y = snap.map { it.process.flow })
             }
         }
     }

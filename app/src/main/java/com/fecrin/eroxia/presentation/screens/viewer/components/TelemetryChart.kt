@@ -69,7 +69,10 @@ fun TelemetryChart(viewModel: ViewerViewModel) {
                 startAxis = VerticalAxis.rememberStart(valueFormatter = yFmt),
                 bottomAxis = HorizontalAxis.rememberBottom(
                     valueFormatter = xFmt,
-                    itemPlacer = HorizontalAxis.ItemPlacer.aligned(spacing = { 5 })
+                    itemPlacer = HorizontalAxis.ItemPlacer.aligned(
+                        spacing = { 5 },
+                        shiftExtremeLines = false
+                    )
                 )
             ),
             modelProducer = viewModel.modelProducer,

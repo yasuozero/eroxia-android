@@ -22,5 +22,6 @@ fun AppNavGraph() {
         composable<Viewer> {
             ViewerScreen()
         }
+
     }
 }

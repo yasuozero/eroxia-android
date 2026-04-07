@@ -1,6 +1,9 @@
 package com.fecrin.eroxia.data.repository
 
+import android.util.Log
 import com.fecrin.eroxia.data.json
+import com.fecrin.eroxia.data.local.dao.TelemetryDao
+import com.fecrin.eroxia.data.local.entity.TelemetryEntity
 import com.fecrin.eroxia.data.remote.MessageRouter
 import com.fecrin.eroxia.data.remote.WebSocketService
 import com.fecrin.eroxia.data.remote.model.ClientMessage
@@ -14,7 +17,8 @@ import javax.inject.Singleton
 @Singleton
 class ConnectionRepository @Inject constructor(
     private val wss: WebSocketService,
-    val router: MessageRouter
+    val router: MessageRouter,
+    private val telemetryDao: TelemetryDao
 ) {
     private val _connectionState = MutableStateFlow(false)
     val connectionState: StateFlow<Boolean> = _connectionState.asStateFlow()
@@ -22,6 +26,32 @@ class ConnectionRepository @Inject constructor(
     private var reconnectJob: Job? = null
     private var currentUrl: String? = null
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    private var currentSessionId: String? = null
+
+    init {
+        scope.launch {
+            router.handshake.collect { payload ->
+                currentSessionId = payload.sessionId
+                Log.d("EroxiaDB", "Yeni oturum başladı: $currentSessionId")
+            }
+        }
+
+        scope.launch {
+            router.telemetry.collect { payload ->
+                currentSessionId?.let { sessionId ->
+                    val entity = TelemetryEntity(
+                        sessionId = sessionId,
+                        t = payload.t,
+                        motion = payload.motion,
+                        process = payload.process
+                    )
+                    telemetryDao.insertTelemetry(entity)
+                    Log.d("EroxiaDB", "Veri Kaydedildi! Zaman: ${entity.t}")
+                } ?: Log.e("EroxiaDB", "Veri geldi ama Session ID yok! Kaydedilmedi.")
+            }
+        }
+    }
 
     fun connect(url: String) {
         currentUrl = url
@@ -47,6 +77,7 @@ class ConnectionRepository @Inject constructor(
                 _connectionState.value = true
             },
             onDisconnected = {
+                currentSessionId = null
                 _connectionState.value = false
             }
         )
@@ -66,6 +97,7 @@ class ConnectionRepository @Inject constructor(
     fun disconnect() {
         reconnectJob?.cancel()
         currentUrl = null
+        currentSessionId = null
         wss.disconnect()
         _connectionState.value = false
     }
