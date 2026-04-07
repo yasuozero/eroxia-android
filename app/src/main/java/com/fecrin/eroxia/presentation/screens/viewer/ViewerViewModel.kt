@@ -22,6 +22,7 @@ class ViewerViewModel @Inject constructor(
     private val maxPts = 30
     private val _points = MutableStateFlow<List<TelemetryPayload>>(emptyList())
     val points = _points.asStateFlow()
+    val connectionState = repository.connectionState
 
     init {
         listenTelemetry()

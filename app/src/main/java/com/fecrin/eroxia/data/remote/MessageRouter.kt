@@ -20,7 +20,9 @@ class MessageRouter @Inject constructor() {
     private val _admin = MutableSharedFlow<AdminAuthResultPayload>(
         extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private val _telemetry = MutableSharedFlow<TelemetryPayload>()
+    private val _telemetry = MutableSharedFlow<TelemetryPayload>(
+        extraBufferCapacity = 20, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     val handshake: SharedFlow<HandshakePayload> = _handshake.asSharedFlow()
     val telemetry: SharedFlow<TelemetryPayload> = _telemetry.asSharedFlow()
