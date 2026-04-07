@@ -4,27 +4,52 @@ import com.fecrin.eroxia.data.json
 import com.fecrin.eroxia.data.remote.MessageRouter
 import com.fecrin.eroxia.data.remote.WebSocketService
 import com.fecrin.eroxia.data.remote.model.ClientMessage
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ConnectionRepository @Inject constructor(
-    private val wss: WebSocketService, val router: MessageRouter
+    private val wss: WebSocketService,
+    val router: MessageRouter
 ) {
-
     private val _connectionState = MutableStateFlow(false)
     val connectionState: StateFlow<Boolean> = _connectionState.asStateFlow()
 
-    fun connect(url: String) {
+    private var reconnectJob: Job? = null
+    private var currentUrl: String? = null
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-        wss.connect(url = url, onMessage = { message ->
-            router.route(message)
-        }, onConnected = {
-            _connectionState.value = true
-        }, onDisconnected = {
-            _connectionState.value = false
-        })
+    fun connect(url: String) {
+        currentUrl = url
+        reconnectJob?.cancel()
+
+        reconnectJob = scope.launch {
+            while (isActive) {
+                if (!_connectionState.value) {
+                    establishConnection(url)
+                }
+                delay(3000)
+            }
+        }
+    }
+
+    private fun establishConnection(url: String) {
+        wss.connect(
+            url = url,
+            onMessage = { message ->
+                router.route(message)
+            },
+            onConnected = {
+                _connectionState.value = true
+            },
+            onDisconnected = {
+                _connectionState.value = false
+            }
+        )
     }
 
     @PublishedApi
@@ -34,16 +59,14 @@ class ConnectionRepository @Inject constructor(
 
     inline fun <reified T> sendMessage(type: String, payload: T): Boolean {
         val clientMessage = ClientMessage(type = type, payload = payload)
-
         val jsonString = json.encodeToString(clientMessage)
-
         return sendRawString(jsonString)
     }
 
     fun disconnect() {
+        reconnectJob?.cancel()
+        currentUrl = null
         wss.disconnect()
         _connectionState.value = false
     }
-
-
 }
