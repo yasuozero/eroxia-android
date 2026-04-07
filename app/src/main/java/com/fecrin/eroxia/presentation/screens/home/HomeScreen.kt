@@ -48,7 +48,7 @@ fun HomeScreen(
             onConfirm = { password ->
                 viewModel.loginAsAdmin(password)
             },
-            errorMessage = adminError
+            errorMessage = adminError?.let { stringResource(id = it) } ?: ""
         )
     }
 

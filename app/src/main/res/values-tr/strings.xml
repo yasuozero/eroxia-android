@@ -17,4 +17,7 @@
     <string name="process_speed">Hız</string>
 
     <string name="control_mods_button">Modlar</string>
+
+    <string name="error_incorrect_password">Şifre hatalı. Lütfen tekrar deneyin.</string>
+    <string name="error_session_full">Mevcut oturum dolu. Lütfen daha sonra tekrar deneyin.</string>
 </resources>

@@ -1,8 +1,8 @@
 package com.fecrin.eroxia.presentation.screens.home
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fecrin.eroxia.R
 import com.fecrin.eroxia.data.repository.ConnectionRepository
 import com.fecrin.eroxia.domain.AuthenticateAsAdminUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +21,8 @@ class HomeViewModel @Inject constructor(private val repository: ConnectionReposi
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Disconnected)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    private val _adminError = MutableStateFlow<String?>(null)
-    val adminError: StateFlow<String?> = _adminError.asStateFlow()
+    private val _adminError = MutableStateFlow<Int?>(null)
+    val adminError: StateFlow<Int?> = _adminError.asStateFlow()
 
     private val _adminSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val adminSuccess: SharedFlow<Unit> = _adminSuccess.asSharedFlow()
@@ -45,7 +45,6 @@ class HomeViewModel @Inject constructor(private val repository: ConnectionReposi
                     payload.admin -> HomeUiState.AdminTaken
                     else -> HomeUiState.AdminAvailable
                 }
-
             }
         }
     }
@@ -53,20 +52,17 @@ class HomeViewModel @Inject constructor(private val repository: ConnectionReposi
     private fun listenAdminAuth() {
         viewModelScope.launch {
             repository.router.admin.collect { payload ->
-
                 when (payload.status) {
                     "failed" -> {
-                        _adminError.value = "The password is incorrect. Please try again."
+                        _adminError.value = R.string.error_incorrect_password
                     }
-
                     "success" -> {
                         _adminError.value = null
+                        _adminSuccess.tryEmit(Unit)
                     }
-
                     "occupied" -> {
-                        _adminError.value = "The current session is full. Please try again later."
+                        _adminError.value = R.string.error_session_full
                     }
-
                     "available" -> {
                         _adminError.value = null
                     }
@@ -92,10 +88,6 @@ class HomeViewModel @Inject constructor(private val repository: ConnectionReposi
 
     fun loginAsAdmin(password: String) {
         _adminError.value = null
-        val success: Boolean = AuthenticateAsAdminUseCase(repository).invoke(password)
-
-        if (success) {
-            _adminSuccess.tryEmit(Unit)
-        }
+        AuthenticateAsAdminUseCase(repository).invoke(password)
     }
 }
