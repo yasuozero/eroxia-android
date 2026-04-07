@@ -53,7 +53,7 @@ private val LightColorScheme = lightColorScheme(
     primaryContainer = Primary100,
     onPrimaryContainer = Primary900,
 
-    secondary = Zinc200,
+    secondary = Zinc500,
     onSecondary = Zinc900,
     secondaryContainer = Zinc100,
     onSecondaryContainer = Zinc900,
