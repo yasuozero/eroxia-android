@@ -21,19 +21,17 @@ import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLa
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
-import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 @Composable
 fun TelemetryChart(viewModel: ViewerViewModel) {
-    val timeFmt = remember { SimpleDateFormat("HH:mm:ss", Locale.getDefault()) }
 
-    val xFmt = remember(viewModel.xSecondKey) {
-        CartesianValueFormatter { context, x, _ ->
-            val ts = context.model.extraStore.getOrNull(viewModel.xSecondKey)
-                ?: return@CartesianValueFormatter ""
-            timeFmt.format(Date(ts[x.toInt().coerceIn(ts.indices)]))
+    val xFmt = remember {
+        CartesianValueFormatter { _, x, _ ->
+            val totalSeconds = x.toLong()
+            val m = totalSeconds / 60
+            val s = totalSeconds % 60
+            String.format(Locale.getDefault(), "%02d:%02d", m, s)
         }
     }
 
@@ -71,7 +69,7 @@ fun TelemetryChart(viewModel: ViewerViewModel) {
                 startAxis = VerticalAxis.rememberStart(valueFormatter = yFmt),
                 bottomAxis = HorizontalAxis.rememberBottom(
                     valueFormatter = xFmt,
-                    itemPlacer = HorizontalAxis.ItemPlacer.aligned(spacing = { 10 })
+                    itemPlacer = HorizontalAxis.ItemPlacer.aligned(spacing = { 5 })
                 )
             ),
             modelProducer = viewModel.modelProducer,

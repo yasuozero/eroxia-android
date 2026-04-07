@@ -6,7 +6,6 @@ import com.fecrin.eroxia.data.remote.model.TelemetryPayload
 import com.fecrin.eroxia.data.repository.ConnectionRepository
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.compose.common.data.ExtraStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,17 +13,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class ViewerViewModel @Inject constructor(
     private val repository: ConnectionRepository
 ) : ViewModel() {
 
     val modelProducer = CartesianChartModelProducer()
-    val xSecondKey = ExtraStore.Key<List<Long>>()
     private val maxPts = 30
     private val _points = MutableStateFlow<List<TelemetryPayload>>(emptyList())
-
     val points = _points.asStateFlow()
 
     init {
@@ -35,7 +31,7 @@ class ViewerViewModel @Inject constructor(
         viewModelScope.launch {
             repository.router.telemetry.collect { payload ->
                 _points.update { (it + payload).takeLast(maxPts) }
-                syncChart()
+                launch { syncChart() }
             }
         }
     }
@@ -45,18 +41,12 @@ class ViewerViewModel @Inject constructor(
 
         modelProducer.runTransaction {
             lineSeries {
-                val xValues = snap.indices.map { it.toFloat() }
+                val xValues = snap.map { it.t }
 
                 series(x = xValues, y = snap.map { it.process.pressure })
                 series(x = xValues, y = snap.map { it.process.temperature })
                 series(x = xValues, y = snap.map { it.process.flow })
             }
-
-            extras {
-                it[xSecondKey] = snap.map { p -> (p.t * 1000).toLong() }
-            }
         }
     }
-
-
 }
