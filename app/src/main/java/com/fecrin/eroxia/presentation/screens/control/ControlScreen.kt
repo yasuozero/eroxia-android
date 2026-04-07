@@ -48,15 +48,12 @@ fun ControlScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ControlScreenContent(
-        uiState = uiState,
-        onPowerClick = { viewModel.togglePower() }
-    )
+        uiState = uiState, onPowerClick = { viewModel.togglePower() })
 }
 
 @Composable
 private fun ControlScreenContent(
-    uiState: ControlUiState,
-    onPowerClick: () -> Unit
+    uiState: ControlUiState, onPowerClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -93,8 +90,7 @@ private fun ControlScreenContent(
             } else {
 
                 Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
                     FloatingActionButton(
                         onClick = onPowerClick,
@@ -146,24 +142,45 @@ private fun ControlProcessArea(temperature: Int, pressure: Int, speed: Int) {
 
 @Composable
 private fun ControlPad(
-    onPowerClick: () -> Unit
+    onPowerClick: () -> Unit, viewModel: ControlViewModel = hiltViewModel()
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
 
     val buttonList = listOf(
-        ControlButtonData(Icons.AutoMirrored.Default.RotateLeft, "Rotate Left", secondaryColor) {},
-        ControlButtonData(Icons.Default.KeyboardArrowUp, "Up", primaryColor) {},
-        ControlButtonData(Icons.AutoMirrored.Default.CallMade, "Top Right", secondaryColor) {},
+        ControlButtonData(
+            Icons.AutoMirrored.Default.RotateLeft,
+            "Rotate Left",
+            secondaryColor
+        ) {
+            viewModel.sendCommand("ROTATE_LEFT")
+        },
+        ControlButtonData(Icons.Default.KeyboardArrowUp, "Up", primaryColor) {
+            viewModel.sendCommand("UP")
+        },
+        ControlButtonData(Icons.AutoMirrored.Default.CallMade, "Top Right", secondaryColor) {
+            viewModel.sendCommand("TOP_RIGHT")
+        },
 
-        ControlButtonData(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Left", primaryColor) {},
-        ControlButtonData(Icons.Default.Pause, "Power", Color(0xFFF44336)) { onPowerClick() },
-        ControlButtonData(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Right", primaryColor) {},
+        ControlButtonData(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Left", primaryColor) {
+            viewModel.sendCommand("LEFT")
+        },
+        ControlButtonData(Icons.Default.Pause, "Power", Color(0xFFF44336)) {
+            onPowerClick()
+        },
+        ControlButtonData(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Right", primaryColor) {
+            viewModel.sendCommand("RIGHT")
+        },
 
-        ControlButtonData(Icons.AutoMirrored.Default.CallReceived, "Bottom Left", secondaryColor) {},
-        ControlButtonData(Icons.Default.KeyboardArrowDown, "Down", primaryColor) {},
-        ControlButtonData(Icons.AutoMirrored.Filled.RotateRight, "Rotate Right", secondaryColor) {}
-    )
+        ControlButtonData(Icons.AutoMirrored.Default.CallReceived, "Bottom Left", secondaryColor) {
+            viewModel.sendCommand("BOTTOM_LEFT")
+        },
+        ControlButtonData(Icons.Default.KeyboardArrowDown, "Down", primaryColor) {
+            viewModel.sendCommand("DOWN")
+        },
+        ControlButtonData(Icons.AutoMirrored.Filled.RotateRight, "Rotate Right", secondaryColor) {
+            viewModel.sendCommand("ROTATE_RIGHT")
+        })
 
     Box(modifier = Modifier.padding(24.dp)) {
         ControlPadGrid(buttons = buttonList)
@@ -175,11 +192,6 @@ private fun ControlPad(
 private fun ControlScreenPreview() {
     ControlScreenContent(
         uiState = ControlUiState(
-            isRunning = true,
-            temperature = 25,
-            pressure = 1013,
-            speed = 10
-        ),
-        onPowerClick = {}
-    )
+            isRunning = true, temperature = 25, pressure = 1013, speed = 10
+        ), onPowerClick = {})
 }
