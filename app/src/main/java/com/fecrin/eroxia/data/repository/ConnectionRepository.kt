@@ -1,7 +1,6 @@
 package com.fecrin.eroxia.data.repository
 
 import com.fecrin.eroxia.data.json
-import com.fecrin.eroxia.data.local.dao.TelemetryDao
 import com.fecrin.eroxia.data.local.entity.TelemetryEntity
 import com.fecrin.eroxia.data.remote.MessageRouter
 import com.fecrin.eroxia.data.remote.WebSocketService
@@ -13,14 +12,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+enum class ConnectionStatus { DISCONNECTED, CONNECTING, CONNECTED }
+
 @Singleton
 class ConnectionRepository @Inject constructor(
     private val wss: WebSocketService,
     val router: MessageRouter,
     private val telemetryRepository: TelemetryRepository
 ) {
-    private val _connectionState = MutableStateFlow(false)
-    val connectionState: StateFlow<Boolean> = _connectionState.asStateFlow()
+    private val _connectionState = MutableStateFlow(ConnectionStatus.DISCONNECTED)
+    val connectionState: StateFlow<ConnectionStatus> = _connectionState.asStateFlow()
 
     private var reconnectJob: Job? = null
     private var currentUrl: String? = null
@@ -56,7 +57,8 @@ class ConnectionRepository @Inject constructor(
 
         reconnectJob = scope.launch {
             while (isActive) {
-                if (!_connectionState.value) {
+                if (_connectionState.value == ConnectionStatus.DISCONNECTED) {
+                    _connectionState.value = ConnectionStatus.CONNECTING
                     establishConnection(url)
                 }
                 delay(3000)
@@ -71,11 +73,11 @@ class ConnectionRepository @Inject constructor(
                 router.route(message)
             },
             onConnected = {
-                _connectionState.value = true
+                _connectionState.value = ConnectionStatus.CONNECTED
             },
             onDisconnected = {
                 currentSessionId = null
-                _connectionState.value = false
+                _connectionState.value = ConnectionStatus.DISCONNECTED
             }
         )
     }
@@ -96,6 +98,6 @@ class ConnectionRepository @Inject constructor(
         currentUrl = null
         currentSessionId = null
         wss.disconnect()
-        _connectionState.value = false
+        _connectionState.value = ConnectionStatus.DISCONNECTED
     }
 }

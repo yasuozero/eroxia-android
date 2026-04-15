@@ -5,10 +5,12 @@ import com.fecrin.eroxia.data.remote.model.ServerMessage
 import kotlinx.serialization.json.Json
 import okhttp3.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class WebSocketService @Inject constructor() {
-
-    private val client = OkHttpClient()
+@Singleton
+class WebSocketService @Inject constructor(
+    private val client: OkHttpClient
+) {
     private var ws: WebSocket? = null
 
     fun connect(

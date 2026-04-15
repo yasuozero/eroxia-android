@@ -1,5 +1,6 @@
 package com.fecrin.eroxia.data.remote
 
+import android.util.Log
 import com.fecrin.eroxia.data.json
 import com.fecrin.eroxia.data.remote.model.ActionPayload
 import com.fecrin.eroxia.data.remote.model.AdminAuthResultPayload
@@ -10,6 +11,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import javax.inject.Inject
 
@@ -39,26 +41,29 @@ class MessageRouter @Inject constructor() {
 
     fun route(message: ServerMessage) {
         when (message.type) {
-            "handshake" -> {
-                val payload = json.decodeFromJsonElement<HandshakePayload>(message.payload)
-                _handshake.tryEmit(payload)
-            }
+            ServerMessageTypes.HANDSHAKE -> tryDecodeAndEmit(message.payload, _handshake, "Handshake")
 
-            "admin_result" -> {
-                val payload = json.decodeFromJsonElement<AdminAuthResultPayload>(message.payload)
-                _admin.tryEmit(payload)
-            }
+            ServerMessageTypes.ADMIN_RESULT -> tryDecodeAndEmit(message.payload, _admin, "Admin")
 
-            "telemetry" -> {
-                val payload = json.decodeFromJsonElement<TelemetryPayload>(message.payload)
-                _telemetry.tryEmit(payload)
-            }
+            ServerMessageTypes.TELEMETRY -> tryDecodeAndEmit(message.payload, _telemetry, "Telemetry")
 
-            "action_result" -> {
-                val payload = json.decodeFromJsonElement<ActionPayload>(message.payload)
-                _action.tryEmit(payload)
-            }
+            ServerMessageTypes.ACTION_RESULT -> tryDecodeAndEmit(message.payload, _action, "Action")
+
+            else -> Log.w("MessageRouter", "Unknown message type received: ${message.type}")
         }
     }
 
+}
+
+private inline fun <reified T> tryDecodeAndEmit(
+    payloadElement: JsonElement,
+    flow: MutableSharedFlow<T>,
+    payloadName: String
+) {
+    try {
+        val payload = json.decodeFromJsonElement<T>(payloadElement)
+        flow.tryEmit(payload)
+    } catch (e: Exception) {
+        Log.e("MessageRouter", "Failed to parse $payloadName payload: ${e.localizedMessage}")
+    }
 }
