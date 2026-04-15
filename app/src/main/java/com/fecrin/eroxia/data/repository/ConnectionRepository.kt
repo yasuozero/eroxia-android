@@ -17,7 +17,7 @@ import javax.inject.Singleton
 class ConnectionRepository @Inject constructor(
     private val wss: WebSocketService,
     val router: MessageRouter,
-    private val telemetryDao: TelemetryDao
+    private val telemetryRepository: TelemetryRepository
 ) {
     private val _connectionState = MutableStateFlow(false)
     val connectionState: StateFlow<Boolean> = _connectionState.asStateFlow()
@@ -44,7 +44,7 @@ class ConnectionRepository @Inject constructor(
                         motion = payload.motion,
                         process = payload.process
                     )
-                    telemetryDao.insertTelemetry(entity)
+                    telemetryRepository.saveTelemetry(entity)
                 }
             }
         }

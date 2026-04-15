@@ -6,6 +6,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import com.fecrin.eroxia.presentation.screens.control.ControlScreen
 import com.fecrin.eroxia.presentation.screens.home.HomeScreen
+import com.fecrin.eroxia.presentation.screens.history.HistoryScreen
 import com.fecrin.eroxia.presentation.screens.viewer.ViewerScreen
 
 @Composable
@@ -17,10 +18,13 @@ fun AppNavGraph() {
             HomeScreen(navController = navController)
         }
         composable<Control> {
-            ControlScreen()
+            ControlScreen(navController = navController)
         }
         composable<Viewer> {
             ViewerScreen()
+        }
+        composable<History> {
+            HistoryScreen(onBackClick = { navController.popBackStack() })
         }
 
     }

@@ -16,11 +16,11 @@ interface TelemetryDao {
     @Query("SELECT * FROM telemetry_data ORDER BY id DESC")
     fun getAllTelemetry(): Flow<List<TelemetryEntity>>
 
-    @Query("SELECT * FROM telemetry_data WHERE sessionId = :sessionId ORDER BY id ASC")
-    fun getTelemetryBySession(sessionId: String): Flow<List<TelemetryEntity>>
-
-    @Query("SELECT DISTINCT sessionId FROM telemetry_data ORDER BY id DESC")
+    @Query("SELECT DISTINCT session_id FROM telemetry_data ORDER BY id DESC")
     fun getAllSessionIds(): Flow<List<String>>
+
+    @Query("SELECT * FROM telemetry_data WHERE session_id = :sessionId ORDER BY time ASC")
+    suspend fun getTelemetryForPlayback(sessionId: String): List<TelemetryEntity>;
 
     @Query("DELETE FROM telemetry_data")
     suspend fun clearAllTelemetry()

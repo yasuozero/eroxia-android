@@ -21,4 +21,12 @@
 
     <string name="error_incorrect_password">The password is incorrect. Please try again.</string>
     <string name="error_session_full">The current session is full. Please try again later.</string>
+
+    <string name="history_title">History</string>
+    <string name="session_id_label">Session ID</string>
+
+    <string name="admin_login_title">Admin Login</string>
+    <string name="admin_login_description">Enter the administrator password to continue.</string>
+    <string name="password_label">Password</string>
+    <string name="btn_join">Join</string>
 </resources>

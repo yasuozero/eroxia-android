@@ -10,3 +10,5 @@ data object Control
 
 @Serializable
 data object Viewer
+@Serializable
+data object History

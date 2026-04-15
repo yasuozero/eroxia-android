@@ -1,5 +1,6 @@
 package com.fecrin.eroxia.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,7 +12,10 @@ data class TelemetryEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
+    @ColumnInfo(name = "session_id")
     val sessionId: String,
+
+    @ColumnInfo(name = "time")
     val t: Float,
 
     @Embedded(prefix = "motion_")

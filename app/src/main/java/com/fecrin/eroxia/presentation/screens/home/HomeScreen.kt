@@ -23,8 +23,7 @@ import com.fecrin.eroxia.presentation.screens.home.components.HomeStateView
 
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel()
+    navController: NavController, viewModel: HomeViewModel = hiltViewModel()
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -43,13 +42,9 @@ fun HomeScreen(
 
 
     if (showPasswordDialog) {
-        AdminPasswordDialog(
-            onDismiss = { showPasswordDialog = false },
-            onConfirm = { password ->
-                viewModel.loginAsAdmin(password)
-            },
-            errorMessage = adminError?.let { stringResource(id = it) } ?: ""
-        )
+        AdminPasswordDialog(onDismiss = { showPasswordDialog = false }, onConfirm = { password ->
+            viewModel.loginAsAdmin(password)
+        }, errorMessage = adminError?.let { stringResource(id = it) })
     }
 
     when (uiState) {
@@ -64,9 +59,9 @@ fun HomeScreen(
                     navController.navigate(Viewer) {
                         popUpTo(Home)
                     }
-                }
-            )
+                })
         }
+
         HomeUiState.AdminTaken -> {
             HomeStateView(
                 title = stringResource(id = R.string.admin_taken_title),
@@ -75,6 +70,7 @@ fun HomeScreen(
                 state = uiState
             )
         }
+
         HomeUiState.Disconnected -> {
             HomeStateView(
                 title = stringResource(id = R.string.disconnected_title),
@@ -84,5 +80,4 @@ fun HomeScreen(
             )
         }
     }
-
 }

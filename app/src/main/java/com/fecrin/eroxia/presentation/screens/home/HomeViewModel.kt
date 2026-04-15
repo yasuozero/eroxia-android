@@ -82,11 +82,6 @@ class HomeViewModel @Inject constructor(private val repository: ConnectionReposi
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.disconnect()
-    }
-
     fun loginAsAdmin(password: String) {
         authenticateAsAdmin(password)
     }

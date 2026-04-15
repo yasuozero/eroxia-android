@@ -20,4 +20,12 @@
 
     <string name="error_incorrect_password">Şifre hatalı. Lütfen tekrar deneyin.</string>
     <string name="error_session_full">Mevcut oturum dolu. Lütfen daha sonra tekrar deneyin.</string>
+
+    <string name="history_title">Geçmiş Kayıtlar</string>
+    <string name="session_id_label">Oturum ID</string>
+
+    <string name="admin_login_title">Admin Girişi</string>
+    <string name="admin_login_description">Devam etmek için yönetici şifresini girin.</string>
+    <string name="password_label">Şifre</string>
+    <string name="btn_join">Katıl</string>
 </resources>
