@@ -1,5 +1,6 @@
 package com.fecrin.eroxia.data.remote
 
+import android.util.Log
 import com.fecrin.eroxia.data.json
 import com.fecrin.eroxia.data.remote.model.ServerMessage
 import kotlinx.serialization.json.Json
@@ -19,6 +20,8 @@ class WebSocketService @Inject constructor(
         onConnected: () -> Unit,
         onDisconnected: () -> Unit
     ) {
+        ws?.cancel()
+
         val request = Request.Builder().url(url).build()
 
         ws = client.newWebSocket(request, object : WebSocketListener() {
@@ -28,8 +31,12 @@ class WebSocketService @Inject constructor(
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                val message = json.decodeFromString<ServerMessage>(text)
-                onMessage(message)
+                try {
+                    val message = json.decodeFromString<ServerMessage>(text)
+                    onMessage(message)
+                } catch (e: Exception) {
+                    Log.e("WebSocketService", "Failed to parse incoming JSON message: ${e.message}")
+                }
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {

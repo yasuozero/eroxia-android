@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.first
 
 enum class ConnectionStatus { DISCONNECTED, CONNECTING, CONNECTED }
 
@@ -27,6 +28,7 @@ class ConnectionRepository @Inject constructor(
     private var currentUrl: String? = null
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
+    @Volatile
     private var currentSessionId: String? = null
 
     init {
@@ -59,9 +61,16 @@ class ConnectionRepository @Inject constructor(
             while (isActive) {
                 if (_connectionState.value == ConnectionStatus.DISCONNECTED) {
                     _connectionState.value = ConnectionStatus.CONNECTING
+
+                    wss.disconnect()
                     establishConnection(url)
                 }
-                delay(3000)
+
+                if (_connectionState.value == ConnectionStatus.CONNECTED) {
+                    _connectionState.first { it == ConnectionStatus.DISCONNECTED }
+                } else {
+                    delay(3000)
+                }
             }
         }
     }
@@ -93,6 +102,7 @@ class ConnectionRepository @Inject constructor(
         return sendRawString(jsonString)
     }
 
+    @Suppress("unused")
     fun disconnect() {
         reconnectJob?.cancel()
         currentUrl = null
