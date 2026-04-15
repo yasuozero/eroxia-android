@@ -16,15 +16,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.fecrin.eroxia.R
 
 @Composable
 fun AdminPasswordDialog(
@@ -42,7 +43,6 @@ fun AdminPasswordDialog(
                 .clip(RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(18.dp)
-
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -50,7 +50,7 @@ fun AdminPasswordDialog(
             ) {
                 Icon(
                     imageVector = Icons.Default.Shield,
-                    contentDescription = null,
+                    contentDescription = "Admin Shield Icon",
                     modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -59,13 +59,13 @@ fun AdminPasswordDialog(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = "Admin Girişi",
+                        text = stringResource(id = R.string.admin_login_title),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Devam etmek için yönetici şifresini girin.",
+                        text = stringResource(id = R.string.admin_login_description),
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -77,7 +77,7 @@ fun AdminPasswordDialog(
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Şifre") },
+                        label = { Text(stringResource(id = R.string.password_label)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         isError = errorMessage != null,
@@ -93,7 +93,7 @@ fun AdminPasswordDialog(
                                         Icons.Default.VisibilityOff
                                     else
                                         Icons.Default.Visibility,
-                                    contentDescription = null
+                                    contentDescription = "Toggle password visibility"
                                 )
                             }
                         },
@@ -124,7 +124,7 @@ fun AdminPasswordDialog(
                         .height(48.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Katıl", fontWeight = FontWeight.Medium)
+                    Text(stringResource(id = R.string.btn_join), fontWeight = FontWeight.Medium)
                 }
             }
         }
