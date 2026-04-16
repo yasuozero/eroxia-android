@@ -40,6 +40,7 @@ class WebSocketService @Inject constructor(
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                Log.e("WebSocketService", "Connection failed: ${t.message}", t)
                 onDisconnected()
             }
 

@@ -25,8 +25,8 @@ class ControlViewModel @Inject constructor(
 
     init {
         listenTelemetry()
+        listenActionResult()
     }
-
 
     private fun listenTelemetry() {
         viewModelScope.launch {
@@ -41,19 +41,15 @@ class ControlViewModel @Inject constructor(
     }
 
     fun togglePower() {
-        _uiState.update { currentState ->
-            val newState = !currentState.isRunning
+        val currentState = _uiState.value
+        val newRunning = !currentState.isRunning
+        val command = if (newRunning) "POWER_ON" else "POWER_OFF"
 
-            val powerCommand = if (newState) "POWER_ON" else "POWER_OFF"
-            sendCommand(powerCommand)
-
-            currentState.copy(isRunning = newState)
-
-        }
+        sendCommand(command)
     }
 
-     fun sendCommand(action: String) {
-        sendControlCommand(action)
+    fun sendCommand(action: String): Boolean {
+        return sendControlCommand(action)
     }
 
     private fun updateMetrics(newTemperature: Int, newPressure: Int, newSpeed: Int) {
@@ -61,6 +57,15 @@ class ControlViewModel @Inject constructor(
             currentState.copy(
                 temperature = newTemperature, pressure = newPressure, speed = newSpeed
             )
+        }
+    }
+
+    private fun listenActionResult() {
+        viewModelScope.launch {
+            repository.router.action.collect { payload ->
+                _uiState.update { it.copy(isLoading = false) }
+                // TODO:
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.fecrin.eroxia.R
 import com.fecrin.eroxia.data.remote.Constants
 import com.fecrin.eroxia.data.repository.ConnectionRepository
+import com.fecrin.eroxia.data.repository.ConnectionStatus
 import com.fecrin.eroxia.domain.AuthenticateAsAdminUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -74,8 +75,8 @@ class HomeViewModel @Inject constructor(private val repository: ConnectionReposi
 
     private fun listenConnection() {
         viewModelScope.launch {
-            repository.connectionState.collect { connected ->
-                if (!connected) {
+            repository.connectionState.collect { status ->
+                if (status == ConnectionStatus.DISCONNECTED) {
                     _uiState.value = HomeUiState.Disconnected
                 }
             }

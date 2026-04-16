@@ -33,7 +33,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.fecrin.eroxia.R
+import com.fecrin.eroxia.presentation.navigation.History
 import com.fecrin.eroxia.presentation.screens.control.components.ControlPadGrid
 import com.fecrin.eroxia.presentation.screens.control.components.ModsButton
 import com.fecrin.eroxia.presentation.screens.control.components.ProcessCard
@@ -41,7 +43,7 @@ import com.fecrin.eroxia.presentation.screens.control.models.ControlButtonData
 
 @Composable
 fun ControlScreen(
-    viewModel: ControlViewModel = hiltViewModel()
+    navController: NavController, viewModel: ControlViewModel = hiltViewModel()
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -72,12 +74,11 @@ fun ControlScreen(
                         speed = uiState.speed
                     )
 
-                    ModsButton {}
+                    ModsButton(onClick = { navController.navigate(History) })
 
                     ControlPad(
                         onPowerClick = { viewModel.togglePower() },
-                        onCommand = { viewModel.sendCommand(it) }
-                    )
+                        onCommand = { viewModel.sendCommand(it) })
                 }
             } else {
 
@@ -131,16 +132,18 @@ private fun ControlProcessArea(temperature: Int, pressure: Int, speed: Int) {
         )
     }
 }
+
 @Composable
 private fun ControlPad(
-    onPowerClick: () -> Unit,
-    onCommand: (String) -> Unit
+    onPowerClick: () -> Unit, onCommand: (String) -> Unit
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
 
     val buttonList = listOf(
-        ControlButtonData(Icons.AutoMirrored.Default.RotateLeft, "Rotate Left", secondaryColor) {
+        ControlButtonData(
+            Icons.AutoMirrored.Default.RotateLeft, "Rotate Left", secondaryColor
+        ) {
             onCommand("ROTATE_LEFT")
         },
         ControlButtonData(Icons.Default.KeyboardArrowUp, "Up", primaryColor) {
@@ -166,8 +169,7 @@ private fun ControlPad(
         },
         ControlButtonData(Icons.AutoMirrored.Filled.RotateRight, "Rotate Right", secondaryColor) {
             onCommand("ROTATE_RIGHT")
-        }
-    )
+        })
 
     Box(modifier = Modifier.padding(24.dp)) {
         ControlPadGrid(buttons = buttonList)
